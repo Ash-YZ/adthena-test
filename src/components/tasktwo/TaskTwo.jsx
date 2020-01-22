@@ -1,51 +1,105 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import './styles.scss';
 
-const TaskTwo = () => (
-  <div className="task">
-    <h1>Task Two</h1>
-    <div className="content">
-      <h4>Complete the following task:</h4>
-      <p>
-          The task is to create components to fetch public API data, combine it, apply
-          filtering and visualise that data.
-      </p>
-      <p>Include unit tests. Jest is already configured for you in the skeleton project.</p>
-      Expected:
-      <ol type="1">
-        <li>
-          Use data from the following API endpoints:
-          <ol type="a">
-            <li>https://jsonplaceholder.typicode.com/users</li>
-            <li>https://jsonplaceholder.typicode.com/todos</li>
-          </ol>
-        </li>
-        <li>
-          Data fetching should be done with a re-usable data fetching hook.
-        </li>
-        <li>
-          The user interface must accept a username as input.
-        </li>
-        <li>
-          The user interface must handle the case where an error occurs and the case where the
-          requested user is not found.
-        </li>
-        <li>
-          Display the username, email and website of the user.
-        </li>
-        <li>
-          Display a list of Todos for user.
-        </li>
-        <li>
-          Visualise the Todos in such a way that it is easy to distinguish between the
-          complete and incomplete Todos.
-        </li>
-        <li>
-          Give the user the option of a dark theme for the Todos user interface.
-        </li>
-      </ol>
-      <strong>Feel free to use this component for your implementation.</strong>
+export const dataReducer = (state, action) => {
+  if (action.type === 'SET_USER') {
+    return { ...state, user: action.user, searchError: null };
+  }
+  if (action.type === 'SEARCH_ERROR') {
+    return { ...state, user: null, userTodos: [], searchError: true };
+  }
+  if (action.type === 'SET_LIST') {
+    return { ...state, userTodos: action.list };
+  }
+  throw new Error();
+};
+
+const initialData = {
+  user: null,
+  userTodos: [],
+  searchError: null
+}
+
+const TaskTwo = () => {
+
+  const [username, setUsername] = useState('');
+  const [searchFor, setSearchFor] = useState('');
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [theme, setTheme] = useState(null);
+
+  const [data, dispatch] = React.useReducer(dataReducer, initialData);
+
+
+  const getUserTodos = (userId) => {
+    fetch('https://jsonplaceholder.typicode.com/todos?userId=' + userId)
+      .then(res => res.json())
+      .then(res => {
+        dispatch({ type: 'SET_LIST', list: res })
+      })
+  }
+
+  useEffect(() => {
+    searchFor.length && fetch('https://jsonplaceholder.typicode.com/users?username=' + searchFor)
+      .then(res => res.json())
+      .then(res => {
+        if (!!res[0]) {
+          dispatch({ type: 'SET_USER', user: res[0] })
+          getUserTodos(res[0].id);
+        } else {
+          dispatch({ type: 'SEARCH_ERROR' })
+        }
+        setIsInitialLoad(false);
+        setUsername('');
+      })
+  }, [searchFor]);
+
+  const userDetails = () =>
+    <>
+      <h1>User details</h1>
+      <p><strong>Username:</strong> {data.user.username}</p>
+      <p><strong>Email address:</strong> {data.user.email}</p>
+      <p><strong>Website:</strong> {data.user.website}</p>
+    </>
+
+  const userTodoList = () =>
+    <>
+      <h1>To do list</h1>
+      <ul>{data.userTodos.map(todo =>
+        <li key={todo.id}
+          className={todo.completed ? 'complete' : 'incomplete'}>
+          {todo.title}
+        </li>)}
+      </ul>
+    </>;
+
+  return (
+    <div className={`task2 ${!theme ? 'light' : theme}`}>
+      <button type='button' className='themeSwitch'
+        onClick={() => theme === 'dark' ? setTheme('light') : setTheme('dark')}>
+        {`Set ${theme === 'dark' ? 'light' : 'dark'} theme`}
+      </button>
+      <div className='searchWrapper'>
+        <h1>Find a user</h1>
+        <input value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          onKeyUp={e => e.keyCode === 13 && setSearchFor(username)} />
+        <button type='button'
+          onClick={() => username.length && setSearchFor(username)}>
+          Search
+        </button>
+      </div>
+      <div className='listWrapper'>
+        {isInitialLoad ? null :
+          (!data.searchError ? (
+            <>
+              {userDetails()}
+              {userTodoList()}
+            </>) :
+            <h2 className='searchError'>{`User '${searchFor}' not found`}</h2>
+          )}
+      </div>
     </div>
-  </div>
-);
+  )
+}
 
 export default TaskTwo;

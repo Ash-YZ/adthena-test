@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class LogSelectionButton extends Component {
-  logToConsole = () => {
-    const { selected } = this.props;
+  logToConsole = (selected) => {
     console.log(`You clicked: ${selected}`);
   };
 
   handleClick = () => {
-    setTimeout(() => this.logToConsole(), 5000);
+    new Promise((resolve, reject) => {
+      const thisSelected = this.props.selected;
+      setTimeout(() => this.logToConsole(thisSelected), 5000);
+      resolve();
+    })
   };
 
   render() {

@@ -1,0 +1,74 @@
+.task2 {
+  text-align: left;
+  padding: 10px;
+  min-height: 90vh;
+
+  input, button {
+    font-size: 14px;
+    padding: 15px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  input {
+    width: 30vw;
+  }
+
+  button {
+    display: inline;
+    margin: 0;
+
+    &.themeSwitch {
+      float: right;
+    }
+  }
+
+  .listWrapper {
+    ul {
+      list-style: none;
+      padding-left: 0px;
+    }
+
+    li:before {
+      content: '\270F';
+      margin-right: 10px;
+    }
+
+    .complete {
+      &:after {
+        content: "\2713";
+        margin-left: 10px;
+        color: green;
+      }
+    }
+
+    .incomplete {
+      &:after {
+        content: "\2717";
+        padding-left: 10px;
+        color: red;
+      }
+    }
+  }
+
+  &.dark {
+    color: white;
+    background-color: #222;
+
+    h1 {
+      color: white;
+    }
+
+    input, button {
+      background-color: #222;
+      color: white;
+      border: 1px solid white;
+    }
+  }
+
+  .searchError {
+    color: red;
+  }
+}

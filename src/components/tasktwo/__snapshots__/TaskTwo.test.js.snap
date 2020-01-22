@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TaskTwo snapshot renders 1`] = `
+<div
+  className="task2 light"
+>
+  <button
+    className="themeSwitch"
+    onClick={[Function]}
+    type="button"
+  >
+    Set dark theme
+  </button>
+  <div
+    className="searchWrapper"
+  >
+    <h1>
+      Find a user
+    </h1>
+    <input
+      onChange={[Function]}
+      onKeyUp={[Function]}
+      value=""
+    />
+    <button
+      onClick={[Function]}
+      type="button"
+    >
+      Search
+    </button>
+  </div>
+  <div
+    className="listWrapper"
+  />
+</div>
+`;
