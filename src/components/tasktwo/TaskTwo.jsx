@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { getUser, getUserTodoList } from '../../services/Users'
 import './styles.scss';
 
 export const dataReducer = (state, action) => {
@@ -31,7 +32,7 @@ const TaskTwo = () => {
 
 
   const getUserTodos = (userId) => {
-    fetch('https://jsonplaceholder.typicode.com/todos?userId=' + userId)
+    getUserTodoList(userId)
       .then(res => res.json())
       .then(res => {
         dispatch({ type: 'SET_LIST', list: res })
@@ -39,7 +40,7 @@ const TaskTwo = () => {
   }
 
   useEffect(() => {
-    searchFor.length && fetch('https://jsonplaceholder.typicode.com/users?username=' + searchFor)
+    searchFor.length && getUser(searchFor)
       .then(res => res.json())
       .then(res => {
         if (!!res[0]) {
@@ -64,7 +65,15 @@ const TaskTwo = () => {
   const userTodoList = () =>
     <>
       <h1>To do list</h1>
-      <ul>{data.userTodos.map(todo =>
+      <h3>Done:</h3>
+      <ul>{data.userTodos.filter(todo => todo.completed).map(todo =>
+        <li key={todo.id}
+          className={todo.completed ? 'complete' : 'incomplete'}>
+          {todo.title}
+        </li>)}
+      </ul>
+      <h3>Outstanding:</h3>
+      <ul>{data.userTodos.filter(todo => !todo.completed).map(todo =>
         <li key={todo.id}
           className={todo.completed ? 'complete' : 'incomplete'}>
           {todo.title}
